@@ -1,30 +1,41 @@
 package secretborder.window;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.JLabel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Font;
 import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import secretborder.crypto.Bech32Prefix;
+import secretborder.crypto.Crypto;
+import secretborder.util.KeyUtil;
 
 public class HOME {
 
 	private JFrame frmSecretBorder;
 	private final JPanel panel_btn = new JPanel();
-	private JTextField tf_pubKey;
-	private JTextField tf_privKey;
+	private JTextField tfNpub;
+	private JTextField tfHexPub;
+	private JPasswordField pfHexSec;
+	private JPasswordField pfNsec;
+	private JButton btnCopyNpub;
+	private JButton btnCopyHexPub;
+	private JButton btnCopyNsec;
+	private JButton btnCopyHexSec;
+	private byte[] privKey;
 
 	/**
 	 * Launch the application.
@@ -54,8 +65,9 @@ public class HOME {
 	 */
 	private void initialize() {
 		frmSecretBorder = new JFrame();
+		frmSecretBorder.setResizable(false);
 		frmSecretBorder.setTitle("Secret Border - A Secure Nostr Identity Generator");
-		frmSecretBorder.setBounds(100, 100, 500, 270);
+		frmSecretBorder.setBounds(100, 100, 520, 270);
 		frmSecretBorder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel panel = new JPanel();
@@ -64,10 +76,10 @@ public class HOME {
 		JPanel panel_fields = new JPanel();
 		frmSecretBorder.getContentPane().add(panel_fields, BorderLayout.WEST);
 		GridBagLayout gbl_panel_fields = new GridBagLayout();
-		gbl_panel_fields.columnWidths = new int[]{33, 389, 54, 0};
-		gbl_panel_fields.rowHeights = new int[]{22, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel_fields.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel_fields.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_fields.columnWidths = new int[]{16, 435, 37, 0};
+		gbl_panel_fields.rowHeights = new int[]{22, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_fields.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_fields.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_fields.setLayout(gbl_panel_fields);
 		
 		JLabel lblPublicKey = new JLabel("Public Key:");
@@ -78,17 +90,53 @@ public class HOME {
 		gbc_lblPublicKey.gridy = 1;
 		panel_fields.add(lblPublicKey, gbc_lblPublicKey);
 		
-		tf_pubKey = new JTextField();
-		tf_pubKey.setEditable(false);
-		tf_pubKey.setHorizontalAlignment(SwingConstants.CENTER);
-		GridBagConstraints gbc_tf_pubKey = new GridBagConstraints();
-		gbc_tf_pubKey.anchor = GridBagConstraints.WEST;
-		gbc_tf_pubKey.gridwidth = 3;
-		gbc_tf_pubKey.insets = new Insets(0, 0, 5, 0);
-		gbc_tf_pubKey.gridx = 1;
-		gbc_tf_pubKey.gridy = 2;
-		panel_fields.add(tf_pubKey, gbc_tf_pubKey);
-		tf_pubKey.setColumns(40);
+		tfNpub = new JTextField();
+		tfNpub.setToolTipText("npub");
+		tfNpub.setHorizontalAlignment(SwingConstants.CENTER);
+		tfNpub.setEditable(false);
+		tfNpub.setColumns(40);
+		GridBagConstraints gbc_tfNpub = new GridBagConstraints();
+		gbc_tfNpub.insets = new Insets(0, 0, 5, 5);
+		gbc_tfNpub.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tfNpub.gridx = 1;
+		gbc_tfNpub.gridy = 2;
+		panel_fields.add(tfNpub, gbc_tfNpub);
+		
+		btnCopyNpub = new JButton("COPY");
+		btnCopyNpub.setVisible(false);
+		btnCopyNpub.setPreferredSize(new Dimension(40, 20));
+		btnCopyNpub.setFont(new Font("Dialog", Font.PLAIN, 8));
+		btnCopyNpub.setMargin(new Insets(1, 1, 1, 1));
+		GridBagConstraints gbc_btnCopyNpub = new GridBagConstraints();
+		gbc_btnCopyNpub.anchor = GridBagConstraints.WEST;
+		gbc_btnCopyNpub.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCopyNpub.gridx = 2;
+		gbc_btnCopyNpub.gridy = 2;
+		panel_fields.add(btnCopyNpub, gbc_btnCopyNpub);
+		
+		tfHexPub = new JTextField();
+		tfHexPub.setToolTipText("hex");
+		tfHexPub.setHorizontalAlignment(SwingConstants.CENTER);
+		tfHexPub.setEditable(false);
+		tfHexPub.setColumns(40);
+		GridBagConstraints gbc_tfHexPub = new GridBagConstraints();
+		gbc_tfHexPub.insets = new Insets(0, 0, 5, 5);
+		gbc_tfHexPub.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tfHexPub.gridx = 1;
+		gbc_tfHexPub.gridy = 3;
+		panel_fields.add(tfHexPub, gbc_tfHexPub);
+		
+		btnCopyHexPub = new JButton("COPY");
+		btnCopyHexPub.setVisible(false);
+		btnCopyHexPub.setPreferredSize(new Dimension(40, 20));
+		btnCopyHexPub.setMargin(new Insets(1, 1, 1, 1));
+		btnCopyHexPub.setFont(new Font("Dialog", Font.PLAIN, 8));
+		GridBagConstraints gbc_btnCopyHexPub = new GridBagConstraints();
+		gbc_btnCopyHexPub.anchor = GridBagConstraints.WEST;
+		gbc_btnCopyHexPub.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCopyHexPub.gridx = 2;
+		gbc_btnCopyHexPub.gridy = 3;
+		panel_fields.add(btnCopyHexPub, gbc_btnCopyHexPub);
 		
 		JLabel lblPrivateKey = new JLabel("Private Key:");
 		GridBagConstraints gbc_lblPrivateKey = new GridBagConstraints();
@@ -96,37 +144,88 @@ public class HOME {
 		gbc_lblPrivateKey.anchor = GridBagConstraints.WEST;
 		gbc_lblPrivateKey.insets = new Insets(0, 0, 5, 0);
 		gbc_lblPrivateKey.gridx = 1;
-		gbc_lblPrivateKey.gridy = 3;
+		gbc_lblPrivateKey.gridy = 4;
 		panel_fields.add(lblPrivateKey, gbc_lblPrivateKey);
 		
-		tf_privKey = new JTextField();
-		tf_privKey.setEditable(false);
-		tf_privKey.setHorizontalAlignment(SwingConstants.CENTER);
-		tf_privKey.setColumns(40);
-		GridBagConstraints gbc_tf_privKey = new GridBagConstraints();
-		gbc_tf_privKey.anchor = GridBagConstraints.WEST;
-		gbc_tf_privKey.insets = new Insets(0, 0, 5, 0);
-		gbc_tf_privKey.gridwidth = 3;
-		gbc_tf_privKey.gridx = 1;
-		gbc_tf_privKey.gridy = 4;
-		panel_fields.add(tf_privKey, gbc_tf_privKey);
+		pfNsec = new JPasswordField();
+		pfNsec.setToolTipText("nsec");
+		pfNsec.setHorizontalAlignment(SwingConstants.CENTER);
+		pfNsec.setEditable(false);
+		pfNsec.setColumns(40);
+		GridBagConstraints gbc_pfNsec = new GridBagConstraints();
+		gbc_pfNsec.insets = new Insets(0, 0, 5, 5);
+		gbc_pfNsec.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pfNsec.gridx = 1;
+		gbc_pfNsec.gridy = 5;
+		panel_fields.add(pfNsec, gbc_pfNsec);
 		
-		JButton btnShow = new JButton("SHOW");
-		btnShow.setPreferredSize(new Dimension(40, 20));
-		btnShow.setMargin(new Insets(1, 1, 1, 1));
-		btnShow.setFont(new Font("Dialog", Font.BOLD, 8));
-		btnShow.addActionListener(new ActionListener() {
+		btnCopyNsec = new JButton("COPY");
+		btnCopyNsec.setVisible(false);
+		btnCopyNsec.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
+		btnCopyNsec.setPreferredSize(new Dimension(40, 20));
+		btnCopyNsec.setMargin(new Insets(1, 1, 1, 1));
+		btnCopyNsec.setFont(new Font("Dialog", Font.PLAIN, 8));
+		GridBagConstraints gbc_btnCopyNsec = new GridBagConstraints();
+		gbc_btnCopyNsec.anchor = GridBagConstraints.WEST;
+		gbc_btnCopyNsec.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCopyNsec.gridx = 2;
+		gbc_btnCopyNsec.gridy = 5;
+		panel_fields.add(btnCopyNsec, gbc_btnCopyNsec);
+		
+		pfHexSec = new JPasswordField();
+		pfHexSec.setToolTipText("hex");
+		pfHexSec.setHorizontalAlignment(SwingConstants.CENTER);
+		pfHexSec.setEditable(false);
+		pfHexSec.setColumns(40);
+		GridBagConstraints gbc_pfHexSec = new GridBagConstraints();
+		gbc_pfHexSec.insets = new Insets(0, 0, 5, 5);
+		gbc_pfHexSec.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pfHexSec.gridx = 1;
+		gbc_pfHexSec.gridy = 6;
+		panel_fields.add(pfHexSec, gbc_pfHexSec);
+		
+		JButton btnShow = new JButton("SHOW/HIDE");
+		btnShow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int option = JOptionPane.showConfirmDialog(frmSecretBorder, "Do you want to show your secret key?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(option == JOptionPane.OK_OPTION) {
+					showSec();
+				}
+			}
+		});
+		
+		btnCopyHexSec = new JButton("COPY");
+		btnCopyHexSec.setVisible(false);
+		btnCopyHexSec.setPreferredSize(new Dimension(40, 20));
+		btnCopyHexSec.setMargin(new Insets(1, 1, 1, 1));
+		btnCopyHexSec.setFont(new Font("Dialog", Font.PLAIN, 8));
+		GridBagConstraints gbc_btnCopyHexSec = new GridBagConstraints();
+		gbc_btnCopyHexSec.anchor = GridBagConstraints.WEST;
+		gbc_btnCopyHexSec.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCopyHexSec.gridx = 2;
+		gbc_btnCopyHexSec.gridy = 6;
+		panel_fields.add(btnCopyHexSec, gbc_btnCopyHexSec);
+		btnShow.setToolTipText("Show and hide your secret");
+		btnShow.setPreferredSize(new Dimension(80, 20));
+		btnShow.setMargin(new Insets(1, 1, 1, 1));
+		btnShow.setFont(new Font("Dialog", Font.BOLD, 8));
 		GridBagConstraints gbc_btnShow = new GridBagConstraints();
-		gbc_btnShow.insets = new Insets(0, 0, 5, 0);
-		gbc_btnShow.gridx = 2;
-		gbc_btnShow.gridy = 5;
+		gbc_btnShow.anchor = GridBagConstraints.EAST;
+		gbc_btnShow.insets = new Insets(0, 0, 5, 5);
+		gbc_btnShow.gridx = 1;
+		gbc_btnShow.gridy = 7;
 		panel_fields.add(btnShow, gbc_btnShow);
 		frmSecretBorder.getContentPane().add(panel_btn, BorderLayout.SOUTH);
 		
 		JButton btnGenerateNew = new JButton("Generate New");
+		btnGenerateNew.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				generateKeys();
+			}
+		});
 		btnGenerateNew.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_btn.add(btnGenerateNew);
 		
@@ -135,6 +234,34 @@ public class HOME {
 		
 		JButton btnExport = new JButton("Export");
 		panel_btn.add(btnExport);
+	}
+	
+	private void generateKeys() {
+		privKey = Crypto.generatePrivateKey();
+
+		hideSec();
+		pfNsec.setText(KeyUtil.bytesToBech32(privKey, Bech32Prefix.NSEC));
+		pfHexSec.setText(KeyUtil.bytesToHex(privKey));
+		
+		
+		btnCopyNpub.setVisible(true);
+		btnCopyHexPub.setVisible(true);
+		btnCopyNsec.setVisible(true);
+		btnCopyHexSec.setVisible(true);
+	}
+	
+	private void hideSec() {
+		btnCopyHexSec.setVisible(false);
+		btnCopyNsec.setVisible(false);
+		pfNsec.setEchoChar('*');
+		pfHexSec.setEchoChar('*');
+	}
+	
+	private void showSec() {
+		btnCopyHexSec.setVisible(true);
+		btnCopyNsec.setVisible(true);
+		pfNsec.setEchoChar((char) 0);
+		pfHexSec.setEchoChar((char) 0);
 	}
 
 }
