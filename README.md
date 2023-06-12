@@ -1,4 +1,4 @@
-# secret-border
+# Secret Border
 
 A safe Nostr identity generator.
 
