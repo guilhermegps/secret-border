@@ -6,7 +6,7 @@ A safe Nostr identity generator.
 
 This tool is a easy and safe way to create your personal identity on [Nostr](https://nostr.com/) protocol. Using it you can to generate a pair of Nostr keys and backup them in a safe way.
 
-## What is the security guarantees that Secret Border supply?
+## What are the security guarantees that Secret Border supply?
 
  - It can be used completely offline.
  - Use **cryptographically strong pseudo-random number generator** ([CSPRNG](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator)).
@@ -15,7 +15,7 @@ This tool is a easy and safe way to create your personal identity on [Nostr](htt
 
 ## Features
 
- - [x] Generate pair of key randomly
+ - [x] Generate pair of keys randomly
  - [x] Show keys
  - [x] Not connect externally with whatever
  - [ ] Export private key to an encrypted file ⏳
@@ -24,7 +24,7 @@ This tool is a easy and safe way to create your personal identity on [Nostr](htt
 
 ## Building
 
-For building you will need to have **Java 17** installed on your system. 
+To build it you will need to have **Java 17** installed on your system. 
 
 Now just run:
   
