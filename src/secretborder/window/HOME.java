@@ -7,6 +7,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -105,6 +108,11 @@ public class HOME {
 		panel_fields.add(tfNpub, gbc_tfNpub);
 		
 		btnCopyNpub = new JButton("COPY");
+		btnCopyNpub.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				copyToClipboard(tfNpub.getText());
+			}
+		});
 		btnCopyNpub.setVisible(false);
 		btnCopyNpub.setPreferredSize(new Dimension(40, 20));
 		btnCopyNpub.setFont(new Font("Dialog", Font.PLAIN, 8));
@@ -129,6 +137,11 @@ public class HOME {
 		panel_fields.add(tfHexPub, gbc_tfHexPub);
 		
 		btnCopyHexPub = new JButton("COPY");
+		btnCopyHexPub.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				copyToClipboard(tfHexPub.getText());
+			}
+		});
 		btnCopyHexPub.setVisible(false);
 		btnCopyHexPub.setPreferredSize(new Dimension(40, 20));
 		btnCopyHexPub.setMargin(new Insets(1, 1, 1, 1));
@@ -165,6 +178,7 @@ public class HOME {
 		btnCopyNsec.setVisible(false);
 		btnCopyNsec.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				copyToClipboard(String. valueOf(pfNsec.getPassword()));
 			}
 		});
 		btnCopyNsec.setPreferredSize(new Dimension(40, 20));
@@ -206,6 +220,11 @@ public class HOME {
 		});
 		
 		btnCopyHexSec = new JButton("COPY");
+		btnCopyHexSec.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				copyToClipboard(String. valueOf(pfHexSec.getPassword()));
+			}
+		});
 		btnCopyHexSec.setVisible(false);
 		btnCopyHexSec.setPreferredSize(new Dimension(40, 20));
 		btnCopyHexSec.setMargin(new Insets(1, 1, 1, 1));
@@ -238,9 +257,11 @@ public class HOME {
 		panel_btn.add(btnGenerateNew);
 		
 		JButton btnImport = new JButton("Import");
+		btnImport.setEnabled(false);
 		panel_btn.add(btnImport);
 		
 		JButton btnExport = new JButton("Export");
+		btnExport.setEnabled(false);
 		panel_btn.add(btnExport);
 	}
 	
@@ -269,5 +290,11 @@ public class HOME {
 		btnCopyHexSec.setVisible(visibleSec);
 		
 		this.visibleSec = visibleSec;
+	}
+	
+	private void copyToClipboard(String text) {
+		StringSelection stringSelection = new StringSelection(text);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, null);
 	}
 }
