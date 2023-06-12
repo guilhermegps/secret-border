@@ -4,14 +4,14 @@ A safe Nostr identity generator.
 
 ## Why use Secret Border?
 
-This tool is a easy and safe way to create your personal identity on [Nostr](https://nostr.com/) protocol. Using it you can to generate a pair of Nostr keys and backup them in a safe way.
+This tool is an easy and safe way to create your personal identity on [Nostr](https://nostr.com/) protocol. Using it you can to generate a pair of Nostr keys and backup them in a safe way.
 
 ## What are the security guarantees that Secret Border supply?
 
  - It can be used completely offline.
  - Use **cryptographically strong pseudo-random number generator** ([CSPRNG](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator)).
  - It don't save your secret anywhere (**unless you request it**).
- - You can backup your secret in a encrypted file with a password (that you specify). 
+ - You can backup your secret in an encrypted file with a password (that you specify). 
 
 ## Features
 
