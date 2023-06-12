@@ -1,5 +1,10 @@
 package secretborder.util;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
 import secretborder.crypto.Bech32;
 import secretborder.crypto.Bech32Prefix;
 
@@ -32,6 +37,30 @@ public class KeyUtil {
             buf[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
         }
         return buf;
+    }
+
+    public static byte[] bytesFromBigInteger(BigInteger n) {
+
+        byte[] b = n.toByteArray();
+
+        if (b.length == 32) {
+            return b;
+        } else if (b.length > 32) {
+            return Arrays.copyOfRange(b, b.length - 32, b.length);
+        } else {
+            byte[] buf = new byte[32];
+            System.arraycopy(b, 0, buf, buf.length - b.length, b.length);
+            return buf;
+        }
+    }
+
+    public static BigInteger bigIntFromBytes(byte[] b) {
+        return new BigInteger(1, b);
+    }
+
+    public static byte[] sha256(byte[] b) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return digest.digest(b);
     }
 
 }

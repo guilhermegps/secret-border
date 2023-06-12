@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
+import secretborder.util.KeyUtil;
+
 public class Crypto {
 
     private static final String RANDOM_NUMBER_ALGORITHM = "SHA1PRNG";
@@ -38,6 +40,15 @@ public class Crypto {
         }
 
         return privateKeyAttempt;
+    }
+
+    public static byte[] genPubKey(byte[] secKey) {
+        BigInteger x = KeyUtil.bigIntFromBytes(secKey);
+        if (!(BigInteger.ONE.compareTo(x) <= 0 && x.compareTo(Point.getn().subtract(BigInteger.ONE)) <= 0)) {
+            throw new RuntimeException("The secret key must be an integer in the range 1..n-1.");
+        }
+        Point ret = Point.mul(Point.G, x);
+        return Point.bytesFromPoint(ret);
     }
 
 }

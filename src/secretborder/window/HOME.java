@@ -31,11 +31,13 @@ public class HOME {
 	private JTextField tfHexPub;
 	private JPasswordField pfHexSec;
 	private JPasswordField pfNsec;
+	private JButton btnShow;
 	private JButton btnCopyNpub;
 	private JButton btnCopyHexPub;
 	private JButton btnCopyNsec;
 	private JButton btnCopyHexSec;
 	private byte[] privKey;
+	private boolean visibleSec = false;
 
 	/**
 	 * Launch the application.
@@ -187,12 +189,18 @@ public class HOME {
 		gbc_pfHexSec.gridy = 6;
 		panel_fields.add(pfHexSec, gbc_pfHexSec);
 		
-		JButton btnShow = new JButton("SHOW/HIDE");
+		btnShow = new JButton("SHOW/HIDE");
+		btnShow.setEnabled(false);
 		btnShow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(visibleSec) {
+					changeVisionSec(false);
+					return;
+				}
+				
 				int option = JOptionPane.showConfirmDialog(frmSecretBorder, "Do you want to show your secret key?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if(option == JOptionPane.OK_OPTION) {
-					showSec();
+					changeVisionSec(true);
 				}
 			}
 		});
@@ -238,30 +246,28 @@ public class HOME {
 	
 	private void generateKeys() {
 		privKey = Crypto.generatePrivateKey();
+		var pubKey = Crypto.genPubKey(privKey);
 
-		hideSec();
+		changeVisionSec(false);
 		pfNsec.setText(KeyUtil.bytesToBech32(privKey, Bech32Prefix.NSEC));
 		pfHexSec.setText(KeyUtil.bytesToHex(privKey));
+		tfNpub.setText(KeyUtil.bytesToBech32(pubKey, Bech32Prefix.NPUB));
+		tfHexPub.setText(KeyUtil.bytesToHex(pubKey));
 		
-		
+		btnShow.setEnabled(true);
 		btnCopyNpub.setVisible(true);
 		btnCopyHexPub.setVisible(true);
-		btnCopyNsec.setVisible(true);
-		btnCopyHexSec.setVisible(true);
 	}
 	
-	private void hideSec() {
-		btnCopyHexSec.setVisible(false);
-		btnCopyNsec.setVisible(false);
-		pfNsec.setEchoChar('*');
-		pfHexSec.setEchoChar('*');
-	}
-	
-	private void showSec() {
-		btnCopyHexSec.setVisible(true);
-		btnCopyNsec.setVisible(true);
-		pfNsec.setEchoChar((char) 0);
-		pfHexSec.setEchoChar((char) 0);
-	}
+	private void changeVisionSec(boolean visibleSec) {
+		btnCopyHexSec.setVisible(visibleSec);
+		btnCopyNsec.setVisible(visibleSec);
+		pfNsec.setEchoChar(visibleSec ? (char) 0 : '*');
+		pfHexSec.setEchoChar(visibleSec ? (char) 0 : '*');
 
+		btnCopyNsec.setVisible(visibleSec);
+		btnCopyHexSec.setVisible(visibleSec);
+		
+		this.visibleSec = visibleSec;
+	}
 }
