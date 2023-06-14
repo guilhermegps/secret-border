@@ -2,6 +2,7 @@ package secretborder.crypto;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -10,7 +11,19 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.Arrays;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -35,7 +48,6 @@ public class Crypto {
     }
 
     public static byte[] bytesFromBigInteger(BigInteger n) {
-
         byte[] b = n.toByteArray();
 
         if (b.length == 32) {
@@ -57,5 +69,50 @@ public class Crypto {
         Point ret = Point.mul(Point.G, x);
         return Point.bytesFromPoint(ret);
     }
+
+//	public static String encrypt(byte[] input, String password)
+//			throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+//			InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+//		
+//	}
+//
+//	public static byte[] decrypt(byte[] cipherBytes, String password)
+//			throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+//			InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+//		
+//	}
+
+	public static byte[] encrypt(byte[] input, SecretKey key, IvParameterSpec iv)
+			throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+			InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+
+		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+		return cipher.doFinal(input);
+	}
+
+	public static byte[] decrypt(byte[] cipherBytes, SecretKey key, IvParameterSpec iv)
+			throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
+			InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+
+		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		cipher.init(Cipher.DECRYPT_MODE, key, iv);
+		return cipher.doFinal(cipherBytes);
+	}
+
+	public static SecretKey getKeyFromPassword(String password, String salt)
+			throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
+		SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+		return secret;
+	}
+
+	public static IvParameterSpec generateIv() {
+		byte[] iv = new byte[16];
+		new SecureRandom().nextBytes(iv);
+		return new IvParameterSpec(iv);
+	}
 
 }

@@ -12,6 +12,8 @@ This tool is an easy and safe way to create your personal identity on [Nostr](ht
  - Use **cryptographically strong pseudo-random number generator** ([CSPRNG](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator)).
  - It doesn't save your secret anywhere (**unless you request it**).
  - You can backup your secret in an encrypted file with a password (that you specify). 
+ - Code full open source.
+ - It can backup secret in a encrypted file using **AES256**.
 
 ## Features
 
@@ -30,9 +32,8 @@ Now just run:
   
 
 ```bash
-javac -sourcepath ./src/ -d . ./src/secretborder/window/HOME.java
-echo Main-Class: secretborder.window.HOME > MANIFEST.MF
-jar -cvmf MANIFEST.MF secret-border.jar ./secretborder/*
+mvn install
+mvn package
 ```
    
 
@@ -43,5 +44,5 @@ Use **Java 17** installed on your system to run the Jar file.
 You can run it on your terminal/bash:
   
 ```bash
-java -jar secret-border.jar
+java -jar target/secret-border.jar
 ```
