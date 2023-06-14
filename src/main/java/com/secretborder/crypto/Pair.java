@@ -1,4 +1,4 @@
-package secretborder.crypto;
+package com.secretborder.crypto;
 
 // clone of org.apache.commons.lang3.tuple.Pair;
 

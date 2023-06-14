@@ -1,4 +1,4 @@
-package secretborder.window;
+package com.secretborder.window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,9 +22,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import secretborder.crypto.Bech32Prefix;
-import secretborder.crypto.Crypto;
-import secretborder.util.KeyUtil;
+import com.secretborder.crypto.Bech32Prefix;
+import com.secretborder.crypto.Crypto;
+import com.secretborder.util.KeyUtil;
 
 public class HOME {
 

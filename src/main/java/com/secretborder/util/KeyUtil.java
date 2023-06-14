@@ -1,12 +1,12 @@
-package secretborder.util;
+package com.secretborder.util;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import secretborder.crypto.Bech32;
-import secretborder.crypto.Bech32Prefix;
+import com.secretborder.crypto.Bech32;
+import com.secretborder.crypto.Bech32Prefix;
 
 /**
  * @author guilhermegps

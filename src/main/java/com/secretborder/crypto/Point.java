@@ -1,9 +1,9 @@
-package secretborder.crypto;
+package com.secretborder.crypto;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
-import secretborder.util.KeyUtil;
+import com.secretborder.util.KeyUtil;
 
 public class Point {
 

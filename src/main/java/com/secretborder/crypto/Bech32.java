@@ -1,11 +1,11 @@
-package secretborder.crypto;
+package com.secretborder.crypto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import secretborder.util.KeyUtil;
+import com.secretborder.util.KeyUtil;
 
 /**
  *

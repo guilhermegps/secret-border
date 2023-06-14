@@ -1,4 +1,4 @@
-package secretborder.crypto;
+package com.secretborder.crypto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

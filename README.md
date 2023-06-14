@@ -26,7 +26,7 @@ This tool is an easy and safe way to create your personal identity on [Nostr](ht
 
 ## Building
 
-To build it you will need to have **Java 17** installed on your system. 
+To build it you will need to have **Java 17** and **Maven** installed on your system. 
 
 Now just run:
   

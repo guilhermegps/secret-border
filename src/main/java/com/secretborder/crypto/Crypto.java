@@ -1,4 +1,4 @@
-package secretborder.crypto;
+package com.secretborder.crypto;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import secretborder.util.KeyUtil;
+import com.secretborder.util.KeyUtil;
 
 public class Crypto {
 
