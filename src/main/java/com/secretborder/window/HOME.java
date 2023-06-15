@@ -3,6 +3,7 @@ package com.secretborder.window;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,6 +13,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,8 +24,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.bouncycastle.util.Arrays;
+
 import com.secretborder.crypto.Bech32Prefix;
 import com.secretborder.crypto.Crypto;
+import com.secretborder.util.FileUtil;
 import com.secretborder.util.KeyUtil;
 
 public class HOME {
@@ -39,6 +44,8 @@ public class HOME {
 	private JButton btnCopyHexPub;
 	private JButton btnCopyNsec;
 	private JButton btnCopyHexSec;
+	private JButton btnExport;
+	private JButton btnImport;
 	private byte[] privKey;
 	private boolean visibleSec = false;
 
@@ -256,17 +263,36 @@ public class HOME {
 		btnGenerateNew.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_btn.add(btnGenerateNew);
 		
-		JButton btnImport = new JButton("Import");
-		btnImport.setEnabled(false);
+		btnImport = new JButton("Import");
+		btnImport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int option = JOptionPane.showConfirmDialog(frmSecretBorder, "Do you want to load your secret key from your disk?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(option == JOptionPane.OK_OPTION) {
+					loadSecret();
+				}
+			}
+		});
 		panel_btn.add(btnImport);
 		
-		JButton btnExport = new JButton("Export");
+		btnExport = new JButton("Export");
 		btnExport.setEnabled(false);
+		btnExport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int option = JOptionPane.showConfirmDialog(frmSecretBorder, "Do you want to backup your secret key on your disk?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(option == JOptionPane.OK_OPTION) {
+					backupSecret();
+				}
+			}
+		});
 		panel_btn.add(btnExport);
 	}
 	
 	private void generateKeys() {
 		privKey = Crypto.generatePrivateKey();
+		loadKeys();
+	}
+	
+	private void loadKeys() {
 		var pubKey = Crypto.genPubKey(privKey);
 
 		changeVisionSec(false);
@@ -275,6 +301,7 @@ public class HOME {
 		tfNpub.setText(KeyUtil.bytesToBech32(pubKey, Bech32Prefix.NPUB));
 		tfHexPub.setText(KeyUtil.bytesToHex(pubKey));
 		
+		btnExport.setEnabled(true);
 		btnShow.setEnabled(true);
 		btnCopyNpub.setVisible(true);
 		btnCopyHexPub.setVisible(true);
@@ -296,5 +323,48 @@ public class HOME {
 		StringSelection stringSelection = new StringSelection(text);
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		clipboard.setContents(stringSelection, null);
+	}
+	
+	private void writeFile(byte[] fileBytes) {
+		FileDialog dialog = new FileDialog(frmSecretBorder, "Save", FileDialog.SAVE);
+	    dialog.setVisible(true);
+	    File files[] = dialog.getFiles();
+	    if(files!=null){
+	    	File file = files[0];
+        	String path = file.getAbsolutePath();
+        	FileUtil.writeFile(fileBytes, path);
+        }
+	}
+
+	private byte[] readFile() {
+		try {
+			FileDialog dialog = new FileDialog(frmSecretBorder, "Open", FileDialog.LOAD);
+		    dialog.setVisible(true);
+		    File files[] = dialog.getFiles();
+		    if(!Arrays.isNullOrEmpty(files))
+		    	return FileUtil.getBytes(files[0]);
+		    
+		    JOptionPane.showMessageDialog(frmSecretBorder, "File not found", "File not found", JOptionPane.ERROR_MESSAGE);
+		    return null;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private void backupSecret() {
+		var password = JOptionPane.showInputDialog(frmSecretBorder, "Input your password", "Password for encryption!", JOptionPane.WARNING_MESSAGE);
+		var secret = Crypto.encrypt(privKey, password);
+		
+		writeFile(secret);
+		JOptionPane.showMessageDialog(frmSecretBorder, "Your secret has been securely backed up", "Success", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	private void loadSecret() {
+		var password = JOptionPane.showInputDialog(frmSecretBorder, "Input your password", "Password for encryption!", JOptionPane.WARNING_MESSAGE);
+		var fileBytes = readFile();
+		
+		privKey = Crypto.decrypt(fileBytes, password);
+		loadKeys();
+		JOptionPane.showMessageDialog(frmSecretBorder, "Your secret has been securely loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 }

@@ -72,12 +72,12 @@ public class Crypto {
 
 	public static byte[] encrypt(byte[] input, String password) {
 		try {
-			var iv = generateIv();
 			var salt = generateSalt();
+			var key = deriveKeyFromPassword(password, salt, 32);
+			var iv = deriveKeyFromPassword(password, key.getEncoded(), 16).getEncoded();
 			
-			var key = getKeyFromPassword(password, salt);
-			byte[] outputBytes = encrypt(input, key, iv);
-			return Arrays.concatenate(salt, iv.getIV(), outputBytes);
+			byte[] outputBytes = encrypt(input, key, new IvParameterSpec(iv));
+			return Arrays.concatenate(salt, outputBytes);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -85,12 +85,11 @@ public class Crypto {
 
 	public static byte[] decrypt(byte[] cipherBytes, String password) {
 		try {
-			var salt = Arrays.copyOfRange(cipherBytes, 0, 8);
-			var iv = Arrays.copyOfRange(cipherBytes, 9, 24);
+			var salt = Arrays.copyOfRange(cipherBytes, 0, 16);
+			var key = deriveKeyFromPassword(password, salt, 32);
+			var iv = deriveKeyFromPassword(password, key.getEncoded(), 16).getEncoded();
 			
-			var key = getKeyFromPassword(password, salt);
-			byte[] outputBytes = decrypt(Arrays.copyOfRange(cipherBytes, 25, cipherBytes.length), key, new IvParameterSpec(iv));
-			return outputBytes;
+			return decrypt(Arrays.copyOfRange(cipherBytes, 16, cipherBytes.length), key, new IvParameterSpec(iv));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -114,24 +113,18 @@ public class Crypto {
 		return cipher.doFinal(cipherBytes);
 	}
 
-	private static SecretKey getKeyFromPassword(String password, byte[] salt)
+	private static SecretKey deriveKeyFromPassword(String password, byte[] salt, int keySize)
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
 
 		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256);
+		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 100000, keySize*8);
 		SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 		return secret;
 	}
 
-	private static IvParameterSpec generateIv() {
-		byte[] iv = new byte[16];
-		new SecureRandom().nextBytes(iv);
-		return new IvParameterSpec(iv);
-	}
-
     private static byte[] generateSalt() {
         SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[8];
+        byte[] salt = new byte[16];
         random.nextBytes(salt);
         return salt;
     }
