@@ -360,10 +360,15 @@ public class HOME {
 	}
 	
 	private void loadSecret() {
-		var password = JOptionPane.showInputDialog(frmSecretBorder, "Input your password", "Password for encryption!", JOptionPane.WARNING_MESSAGE);
 		var fileBytes = readFile();
+		var password = JOptionPane.showInputDialog(frmSecretBorder, "Input your password", "Password for encryption!", JOptionPane.WARNING_MESSAGE);
 		
-		privKey = Crypto.decrypt(fileBytes, password);
+		try {
+			privKey = Crypto.decrypt(fileBytes, password);
+		} catch (Exception e) {
+		    JOptionPane.showMessageDialog(frmSecretBorder, "It wasn't possible to decrypt the file. Are you sure that the password is correct?", "File not decrypted", JOptionPane.ERROR_MESSAGE);
+		    return;
+		}
 		loadKeys();
 		JOptionPane.showMessageDialog(frmSecretBorder, "Your secret has been securely loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}

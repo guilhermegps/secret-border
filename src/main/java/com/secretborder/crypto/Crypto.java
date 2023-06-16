@@ -83,13 +83,15 @@ public class Crypto {
 		}
 	}
 
-	public static byte[] decrypt(byte[] cipherBytes, String password) {
+	public static byte[] decrypt(byte[] cipherBytes, String password) throws BadPaddingException {
 		try {
 			var salt = Arrays.copyOfRange(cipherBytes, 0, 16);
 			var key = deriveKeyFromPassword(password, salt, 32);
 			var iv = deriveKeyFromPassword(password, key.getEncoded(), 16).getEncoded();
 			
 			return decrypt(Arrays.copyOfRange(cipherBytes, 16, cipherBytes.length), key, new IvParameterSpec(iv));
+		} catch (BadPaddingException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

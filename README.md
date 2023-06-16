@@ -1,6 +1,8 @@
 # Secret Border
 
-A safe Nostr identity generator.
+> A safe Nostr identity generator.
+
+![](https://guilhermegps.com.br/img/secret_border.png)
 
 ## Why use Secret Border?
 
@@ -20,8 +22,8 @@ This tool is an easy and safe way to create your personal identity on [Nostr](ht
  - [x] Generate pair of keys randomly
  - [x] Show keys
  - [x] Not connect externally with whatever
- - [ ] Export private key to an encrypted file ⏳
- - [ ] Import an encrypted file with a private key ⏳
+ - [x] Export private key to an encrypted file
+ - [x] Import an encrypted file with a private key
    
 
 ## Building
@@ -39,7 +41,7 @@ mvn package
 
 ## Running
 
-Use **Java 17** installed on your system to run the Jar file.
+Use **Java 17** installed on your system to run the JAR file.
 
 You can run it on your terminal/bash:
   
