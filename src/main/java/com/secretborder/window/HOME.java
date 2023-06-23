@@ -329,10 +329,11 @@ public class HOME {
 		FileDialog dialog = new FileDialog(frmSecretBorder, "Save", FileDialog.SAVE);
 	    dialog.setVisible(true);
 	    File files[] = dialog.getFiles();
-	    if(files!=null){
+	    if(files!=null && files.length>0){
 	    	File file = files[0];
         	String path = file.getAbsolutePath();
         	FileUtil.writeFile(fileBytes, path);
+    		JOptionPane.showMessageDialog(frmSecretBorder, "Your secret has been securely backed up", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
 	}
 
@@ -359,11 +360,12 @@ public class HOME {
 		var secret = Crypto.encrypt(privKey, password);
 		
 		writeFile(secret);
-		JOptionPane.showMessageDialog(frmSecretBorder, "Your secret has been securely backed up", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private void loadSecret() {
 		var fileBytes = readFile();
+		if(fileBytes==null)
+			return;
 		var password = PasswordDialog.showPasswordDialog(frmSecretBorder);
 		if(password==null)
 			return;
