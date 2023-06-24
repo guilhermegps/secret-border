@@ -288,7 +288,12 @@ public class HOME {
 	}
 	
 	private void generateKeys() {
-		privKey = Crypto.generatePrivateKey();
+		var option = JOptionPane.showConfirmDialog(frmSecretBorder, "Do you want to use your own entropy?", "WARNING", JOptionPane.YES_NO_OPTION);
+		byte[] seed = null;
+		if(option==JOptionPane.YES_OPTION) {
+			seed = DiceDialog.showDiceDialog(frmSecretBorder);
+		}
+		privKey = Crypto.generatePrivateKey(seed);
 		loadKeys();
 	}
 	

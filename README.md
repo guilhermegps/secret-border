@@ -24,7 +24,7 @@ This tool is an easy and safe way to create your personal identity on [Nostr](ht
  - [x] Not connect externally with whatever
  - [x] Export private key to an encrypted file
  - [x] Import an encrypted file with a private key
- - [] Entropy input for generating keys ⏳
+ - [x] Enter entropy to complement key generation
  - [] Support for basic key derivation from mnemonic seed phrase - [NIP06](https://github.com/nostr-protocol/nips/blob/master/06.md) ⏳
    
 

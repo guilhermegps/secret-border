@@ -33,11 +33,14 @@ public class Crypto {
 
 	private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
-    public static byte[] generatePrivateKey() {
+    public static byte[] generatePrivateKey(byte[] seed) {
         try {
+        	var sRandom = SecureRandom.getInstanceStrong();
+        	if (seed!=null)
+        		sRandom.setSeed(seed);
         	Security.addProvider(new BouncyCastleProvider());	
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDSA", "BC");
-            kpg.initialize(new ECGenParameterSpec("secp256k1"), new SecureRandom());
+            kpg.initialize(new ECGenParameterSpec("secp256k1"), sRandom);
             KeyPair processorKeyPair = kpg.genKeyPair();
             
             return bytesFromBigInteger(((ECPrivateKey) processorKeyPair.getPrivate()).getS());

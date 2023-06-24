@@ -53,7 +53,6 @@ public class PasswordDialog extends JDialog {
 			dialog.dispose();
 			dialog = null;
 		}
-		
 	}
 
 	/**
