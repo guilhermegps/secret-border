@@ -37,6 +37,7 @@ public class DiceDialog extends JDialog {
 	private int count = 0;
 	
 	public static byte[] showDiceDialog(Component parentComponent) {
+		JOptionPane.showMessageDialog(parentComponent, "You can use the dice buttons or your own keyboard to input your entropy");
 		DiceDialog dialog = new DiceDialog();
 		try {
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -57,9 +58,7 @@ public class DiceDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public DiceDialog() {
-		JOptionPane.showMessageDialog(dicePanel, "You can use the dice buttons or your own keyboard to input your entropy");
-		
+	public DiceDialog() {		
 		setBounds(100, 100, 390, 380);
 		setResizable(false);
 		setModalityType(DEFAULT_MODALITY_TYPE);

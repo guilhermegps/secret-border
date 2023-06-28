@@ -257,7 +257,12 @@ public class HOME {
 		JButton btnGenerateNew = new JButton("Generate New");
 		btnGenerateNew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				generateKeys();
+				var option = (privKey!=null) 
+						? JOptionPane.showConfirmDialog(frmSecretBorder, "Do you really want to generate a new key? You can lost the last key that wasn't backed up.", "WARNING", JOptionPane.YES_NO_OPTION)
+						: JOptionPane.YES_OPTION;
+				if(option==JOptionPane.YES_OPTION) {
+					generateKeys();
+				}
 			}
 		});
 		btnGenerateNew.setHorizontalAlignment(SwingConstants.LEFT);
