@@ -3,11 +3,11 @@
 	
 	<groupId>secret-border</groupId>
 	<artifactId>secret-border</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<packaging>jar</packaging>
   
 	<name>Secret Border</name>
-	<description>A safe Nostr identity generator.</description>
+	<description>A safe Nostr identity generator.</description>	
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,7 +29,7 @@
 	</dependencies>
 	
 	<build>
-		<finalName>secret-border</finalName>
+		<finalName>SecretBorder_v${project.version}</finalName>
 		<defaultGoal>install</defaultGoal>
 		
 		<plugins>
