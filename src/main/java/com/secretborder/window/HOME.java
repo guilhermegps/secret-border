@@ -77,6 +77,7 @@ public class HOME {
 	 */
 	private void initialize() {
 		frmSecretBorder = new JFrame();
+		frmSecretBorder.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/SecretBorder200x200.png")));
 		frmSecretBorder.setResizable(false);
 		frmSecretBorder.setTitle("Secret Border - A Safe Nostr Identity Generator");
 		frmSecretBorder.setBounds(100, 100, 520, 270);
