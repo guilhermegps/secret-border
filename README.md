@@ -16,6 +16,7 @@ This tool is an easy and safe way to create your personal identity on [Nostr](ht
  - You can backup your secret in an encrypted file with a password (that you specify). 
  - Code full open source.
  - It can backup secret in a encrypted file using **AES256**.
+ - Allow user to add entropy at the generate key process.
 
 ## Features
 
