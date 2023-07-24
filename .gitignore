@@ -166,6 +166,9 @@ modules.xml
 # Compiled class file
 *.class
 
+#Maven
+dependency-reduced-pom.xml
+
 # Log file
 *.log
 

@@ -3,7 +3,7 @@
 	
 	<groupId>secret-border</groupId>
 	<artifactId>secret-border</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.3</version>
 	<packaging>jar</packaging>
   
 	<name>Secret Border</name>

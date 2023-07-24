@@ -324,8 +324,8 @@ public class HOME {
 		pfNsec.setEchoChar(visibleSec ? (char) 0 : '*');
 		pfHexSec.setEchoChar(visibleSec ? (char) 0 : '*');
 
-		btnCopyNsec.setVisible(visibleSec);
-		btnCopyHexSec.setVisible(visibleSec);
+		btnCopyNsec.setVisible(privKey!=null);
+		btnCopyHexSec.setVisible(privKey!=null);
 		
 		this.visibleSec = visibleSec;
 	}
